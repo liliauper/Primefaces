@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xml:lang="es">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html;
+              charset=utf-8" />
+        <title>Sistema Ropa Web</title>
+        <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    </h:head>
+    <h:body class="fondo">
+
+        <p:growl id="growl" showDetail="true"/>
+        <div class="card">
+            <p:button value="Inicio" styleClass="rounded-button"  style="font-size: 1.2em;  border-radius: 5px;"  href ="index.xhtml"/>
+            <p:button value= "Clientes" styleClass="rounded-button"  style="font-size: 1.2em;   border-radius: 5px;" href ="ClientesPrimefaces.xhtml"/>
+            <p:button value="Articulos" styleClass="rounded-button"  style="font-size: 1.2em;   border-radius: 5px;" href ="ArticulosPrimefaces.xhtml"/>     
+        </div>
+
+        <h3 style="text-align: center">MANTENIMIENTO DE ARTICULOS</h3>
+
+        <h:form id="form">
+            <p:outputPanel  class="buscar">
+                <h:panelGrid columns="4" cellpadding="12">
+                    <p:outputLabel value="BUSCAR ARTICULOS POR DESCRIPCION:" style="font-size: 1.5em; "/>
+                    <p:inputText value="#{articuloMB.buscarDescripcion}"/>
+                    <p:commandButton value="BUSCAR ARTICULOS" update="dt-clients"  styleClass="ui-button-success" style="width: 170px; height: 40px;  border-radius: 5px;"/>
+                    <p:commandButton value="INGRESAR NUEVO ARTICULO" icon="pi pi-plus" style="width: 170px; height: 40px;  border-radius: 5px;" actionListener="#{articuloMB.openNew}"
+                                     update=":form:manage-client-content" oncomplete="PF('manageClientDialog').show()"
+                                     styleClass="ui-button-success">
+                        <p:resetInput target=":form:manage-client-content"/>
+                    </p:commandButton>   
+                </h:panelGrid>
+            </p:outputPanel>  
+            <p:dataTable id="dt-clients" 
+                         widgetVar="dtClients" 
+                         var="articulo" 
+                         value="#{articuloMB.likeDescripcion}"
+                         reflow="true" 
+                         styleClass="products-table"
+                         selectionMode="single"
+                         selection="#{articuloMB.articulo}" 
+                         rowKey="#{articulo.id}" 
+                         paginator="true"
+                         rows="10" 
+                         paginatorPosition="bottom"
+                         rowSelectMode="add"
+                         sortBy="#{articulo.id}"
+                         >
+
+                <p:column headerText="Id" style="text-align: center">
+                    <h:outputText value="#{articulo.id}" />
+                </p:column>
+
+                <p:column headerText="Descripcion">
+                    <h:outputText value="#{articulo.descripcion}" />
+                </p:column>
+
+                <p:column headerText="Tipo" style="text-align: center">
+                    <h:outputText value="#{articulo.tipo}" />
+                </p:column>
+
+                <p:column headerText="Color">
+                    <h:outputText value="#{articulo.color}" />
+                </p:column>
+
+                <p:column headerText="Talle / Num" style="text-align: center">
+                    <h:outputText value="#{articulo.talle_num}" />
+                </p:column>
+
+                <p:column headerText="Stock" style="text-align: center">
+                    <h:outputText value="#{articulo.stock}" />
+                </p:column>
+
+                <p:column headerText="Stock Mínimo" style="text-align: center">
+                    <h:outputText value="#{articulo.stockMin}" />
+                </p:column>
+
+                <p:column headerText="Stock Máximo" style="text-align: center">
+                    <h:outputText value="#{articulo.stockMax}" />
+                </p:column>
+
+                <p:column headerText="Costo" style="text-align: center">
+                    <h:outputText value="#{articulo.costo}" />
+                </p:column>
+
+                <p:column headerText="Precio" style="text-align: center">
+                    <h:outputText value="#{articulo.precio}" />
+                </p:column>
+
+                <p:column headerText="Temporada" style="text-align: center">
+                    <h:outputText value="#{articulo.temporada}" />
+                </p:column>
+                <p:column headerText="Acción" style="text-align: center; padding: 0px;">
+                    <p:commandButton icon="pi pi-pencil" update=":form:manage-client-content dt-clients"
+                                     oncomplete="PF('manageClientDialog').show()"
+                                     styleClass="edit-button rounded-button ui-button-success" process="@this">
+                        <f:setPropertyActionListener value="#{articulo}" target="#{articuloMB.articulo}"/>
+                        <p:resetInput target=":form:manage-client-content"/>
+                    </p:commandButton>
+                    <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash" process="@this"
+                                     oncomplete="PF('deleteClientDialog').show()">
+                        <f:setPropertyActionListener value="#{articulo}" target="#{articuloMB.articulo}"/>
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+            <p:dialog header="Detalles del cliente" showEffect="fade" modal="true"
+                      widgetVar="manageClientDialog" responsive="true">
+                <p:outputPanel id="manage-client-content" class="ui-fluid">
+                    <p:outputPanel rendered="#{not empty articuloMB.articulo}">
+                        <h:panelGrid columns="4"
+                                     cellpadding="2"
+                                     class="izq"
+                                     >
+
+                            <p:outputLabel for="descripcion">Descripcion</p:outputLabel>
+                            <p:inputText id="descripcion" value="#{articuloMB.articulo.descripcion}" required="true"/>
+
+
+
+                            <p:outputLabel>Tipo</p:outputLabel>
+
+                            <p:selectOneMenu value="#{articuloMB.articulo.tipo}">
+                                <f:selectItems value="#{tipoMB.tipos}"/>
+                            </p:selectOneMenu>
+
+
+                            <p:outputLabel for="color">Color</p:outputLabel>
+                            <p:inputText id="color" value="#{articuloMB.articulo.color}"/>
+
+                            <p:outputLabel for="talle">Talle/Num</p:outputLabel>
+                            <p:inputTextarea id="talle" value="#{articuloMB.articulo.talle_num}"/>
+
+
+                            <p:outputLabel for="stock">Stock</p:outputLabel>
+                            <p:inputTextarea id="stock" value="#{articuloMB.articulo.stock}"/>
+
+                            <p:outputLabel for="stockMin">Stock Minimo</p:outputLabel>
+                            <p:inputText id="stockMin" value="#{articuloMB.articulo.stockMin}"/>
+
+                            <p:outputLabel for="stockMax">Stock Maximo</p:outputLabel>
+                            <p:inputText id="stockMax" value="#{articuloMB.articulo.stockMax}" />
+
+                            <p:outputLabel for="costo">Costo</p:outputLabel>
+                            <p:inputText id="costo" value="#{articuloMB.articulo.costo}" required="true"/>
+
+                            <p:outputLabel for="precio">Precio</p:outputLabel>
+                            <p:inputText id="precio" value="#{articuloMB.articulo.precio}" required="true"/>
+
+                            <p:outputLabel>Temporada</p:outputLabel>
+                            <p:selectOneMenu value="#{articuloMB.articulo.temporada}">
+                                <f:selectItems value="#{temporadaMB.temporadas}"/>
+                            </p:selectOneMenu>
+
+                        </h:panelGrid>
+                    </p:outputPanel>
+                </p:outputPanel>
+
+                <f:facet name="footer">   
+                    <p:outputPanel class="centered">
+                        <p:commandButton value="Guardar" icon="pi pi-check" actionListener="#{articuloMB.guardar}"
+                                         update="manage-client-content :growl" process="manage-client-content @this" oncomplete="PF('manageClientDialog').hide()"/>
+                        <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('manageClientDialog').hide()"
+                                         class="ui-button-secondary"/>
+                    </p:outputPanel>
+                </f:facet>
+
+            </p:dialog>
+
+            <p:confirmDialog widgetVar="deleteClientDialog" showEffect="fade" width="300"
+                             message="¿Está seguro de borrar este articulo?" header="Confirm" severity="warn">
+                <p:outputPanel class="centered">
+                    <p:commandButton value="Si" icon="pi pi-check" 
+                                     actionListener="#{articuloMB.remove}"
+                                     update=":growl"
+                                     process="@this" oncomplete="PF('deleteClientDialog').hide()"/>
+                    <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                     onclick="PF('deleteClientDialog').hide()"/>
+                </p:outputPanel>
+            </p:confirmDialog>
+
+        </h:form>
+        <div class="bottom">
+            <h:form>
+                <p:dock>
+                    <p:menuitem value="Inicio" icon="/resources/icons/home.png" url="index.xhtml" />
+                    <p:menuitem value="Mantenimiento de clientes" icon="/resources/icons/client.png" url="ClientesPrimefaces.xhtml" />
+                    <p:menuitem value="Mantenimiento de articulos" icon="/resources/icons/products.png" url="ArticulosPrimefaces.xhtml" />
+                </p:dock>
+            </h:form>
+        </div>
+    </h:body>
+</html>
+
